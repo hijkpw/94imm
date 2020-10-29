@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+<!-- header start -->
+{% block title %}{{ title }} - {{ siteName }}{% endblock title %}
+{% block keywords %}{% for t in tag %}{{ t.tname }},{% endfor %}{% endblock keywords %}
+{% block description %}由{{ siteName }}为您整理的高清《{{ title }}》图集{% endblock description %}
+<!-- header end -->
+{% block focusbox %}
+<div class="focusbox">
+    <div class="container"><h1 class="focusbox-title">{{ title }}</h1>
+        <div class="article-tags">
+            {% for t in tag %}
+                <a href="{% url 'tag' t.tid %}">{{ t.tname }}</a>
+            {% endfor %}
+        </div>
+        <div style="padding-top: 5px;font-size:12px;/* margin-top: 0px; */font-family: monospace;color: #978883;">
+            点击图片自动播放
+        </div>
+    </div>
+</div>
+{% endblock focusbox %}
+<!-- menu start-->
+{% block menu %}
+    <ul>
+        <li><a href="/">随便看看</a></li>
+        <li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-17">
+            <a>妹子图</a>
+            <ul class="sub-menu">
+                {% for types in typelist %}
+                    {% ifequal typeid types.type_id %}
+                        <li class="menu-item menu-item-type-taxonomy menu-item-object-category current-menu-item menu-item-28">
+                            <a href="{% url 'type' types.type_id %} ">{{ types.type }}</a></li>
+                    {% else %}
+                        <li><a href="{% url 'type' types.type_id %}">{{ types.type }}</a></li>
+                    {% endifequal %}
+                {% endfor %}
+            </ul>
+        <li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-50716">
+            <a>排行榜</a>
+            <ul class="sub-menu">
+                <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a href="/sort/new">最新发布</a>
+                </li>
+                <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a href="/sort/hot">最受欢迎</a>
+                </li>
+            </ul>
+        </li>
+        <li><a href="/tag">标签云</a></li>
+        <li><a href="/video">视频小姐姐</a></li>
+    </ul>
+{% endblock menu %}
+<!-- menu end-->
+<!-- section start-->
+{% block section %}
+
+
+	<article class="article-content" id="img-box">
+	{% for img in data %}
+		<p><img class="alignnone size-medium wp-image-42" src="/static/zde/timg.gif" data-src="{{ img }}" alt="{{ title }}" style="width:800px;hight:auto" />
+		<!--<p><img class="alignnone size-medium wp-image-42" src="{{ img }}" alt="{{ title }}" style="width:800px;hight:auto" />-->
+		{% endfor %}
+	</p>
+	</article>
+{% endblock section %}
+<!-- section end-->
+{% block recommend %}
+    <div class="line_03"><b></b><span>相关推荐</span><b></b></div>
+<div class="excerpts-article">
+    <div class="excerpts">
+        {% for items in similar %}
+            <article class="excerpt excerpt-c5">
+                <div class="thumbnail">
+				<a href="/type/{{ items.type_id }}" class="imgbox-a"> {{ items.type }}</a>
+                    <div class="imgbox" style="background-image:url({{ items.firstimg }})" onclick="window.location.href= '{% url 'article' items.pid %}';return false">  
+                    </div>
+                </div>
+                <h2><a href="{% url 'article' items.pid %}">{{ items.stitle }}</a></h2>
+                <footer>
+                    <hot>
+                        <img src="/static/zde/hot.png">{{ items.hot }}
+                    </hot>
+                    <a class="post-like">
+                        <time>{{ items.sendtime |date:'Y-m-d' }}</time>
+                    </a>
+                </footer>
+            </article>
+        {% endfor %}
+    </div>
+</div>
+{% endblock recommend %}
+
+{% block js %}
+<script>
+    var num = document.getElementsByTagName('img').length;
+    var img = document.getElementsByClassName("alignnone size-medium wp-image-42");
+    var n = 0; //存储图片加载到的位置，避免每次都从第一张图片开始遍历
+    lazyload(); //页面载入完毕加载可是区域内的图片
+    //window.onscroll = lazyload;
+    function lazyload() { //监听页面滚动事件
+        var seeHeight = document.documentElement.clientHeight; //可见区域高度
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop; //滚动条距离顶部高度
+        for (var i = n; i < num; i++) {
+		    if (typeof(img[i])=="undefined" || img[i]=='' || img[i]==null){
+			        break; 
+			}else{
+            if (img[i].offsetTop < seeHeight + scrollTop) {
+                if (img[i].getAttribute("src") == "/static/zde/timg.gif") {
+                    img[i].src = img[i].getAttribute("data-src");
+                }
+                n = i + 1;
+            }
+        }
+    }
+	}
+	
+	
+	
+// 简单的节流函数
+//fun 要执行的函数
+//delay 延迟
+//time  在time时间内必须执行一次
+function throttle(fun, delay, time) {
+    var timeout,
+        startTime = new Date();
+    return function() {
+        var context = this,
+            args = arguments,
+            curTime = new Date();
+        clearTimeout(timeout);
+        // 如果达到了规定的触发时间间隔，触发 handler
+        if (curTime - startTime >= time) {
+            fun.apply(context, args);
+            startTime = curTime;
+            // 没达到触发间隔，重新设定定时器
+        } else {
+            timeout = setTimeout(function(){
+	            fun.apply(context, args);
+            }, delay);
+        }
+    };
+};
+// 实际想绑定在 scroll 事件上的 handler
+//function lazyload(event) {}
+// 采用了节流函数
+window.addEventListener('scroll',throttle(lazyload,200,500));
+ 
+</script>
+{% endblock js %}

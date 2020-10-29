@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+<!-- header start -->
+{% block title %}{{ siteName }}{% endblock title %}
+{% block keywords %}{{ keyWord }}{% endblock keywords %}
+{% block description %}{{ description }}{% endblock description %}
+<!-- header end -->
+<!-- menu start-->
+{% block menu %}
+<ul>
+    <li class="menu-item menu-item-type-taxonomy menu-item-object-category current-menu-item menu-item-28"><a href="/">随便看看</a>
+    </li>
+    <li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-50716"><a>妹子图</a>
+        <ul class="sub-menu">
+            {% for types in typelist %}
+                <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a
+                        href="{% url 'type' types.type_id %}">{{ types.type }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-50716"><a>排行榜</a>
+        <ul class="sub-menu">
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a
+                    href="/sort/new">最新发布</a></li>
+            <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a
+                    href="/sort/hot">最受欢迎</a></li>
+        </ul>
+    </li>
+    <li><a href="/tag">标签云</a></li>
+    <li><a href="/video">视频小姐姐</a></li>
+</ul>
+{% endblock menu %}
+<!-- menu end-->
+<!-- section start-->
+{% block section %}
+<div class="excerpts-wrapper">
+        <div class="excerpts">
+            {% load pagination_tags %}
+            {% autopaginate data 10 %}
+            {% for imglist in data %}
+                <article class="excerpt excerpt-c5">
+                    <div class="thumbnail">
+					<a href="/type/{{ imglist.type_id }}" class="imgbox-a"> {{ imglist.type }}</a>
+                        <div class="imgbox" style="background-image:url({{ imglist.firstimg }})" onclick="window.location.href= '{% url 'article' imglist.pid %}';return false">  
+                    </div>
+                    <h2><a href="{% url 'article' imglist.pid %}">{{ imglist.title }}</a></h2>
+                    <footer>
+                        <hot>
+                            <img src="/static/zde/hot.png">{{ imglist.hot }}
+                        </hot>
+                        <a class="post-like">
+                            <time>{{ imglist.sendtime |date:'Y-m-d' }}</time></a>
+                    </footer>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+<div class="pagination pagination-multi"> {% paginate %} </div>
+{% endblock section%}
+<!-- section end-->
+<!-- js start -->
+{% block js %}
+<script>
+    window.TBUI = {
+        ajaxpager: '3',
+        pagenum: '3',
+        shareimage: '',
+        shareimagethumb: '1',
+        fullgallery: '0',
+        fullimage: '0'
+    }
+</script>
+{% endblock js %}
+<!--js end-->

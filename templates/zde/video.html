@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+<!-- header start -->
+{% block title %}视频小姐姐 - {{ siteName }}{% endblock title %}
+{% block keywords %}{% for t in keyword %}{{ t.tag }},{% endfor %}{% endblock keywords %}
+{% block description %}{{ description }}{% endblock description %}
+<!-- header end -->
+{% block js_head %}
+<script>if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {window.location.href = "/mvideo";}else{/**/}</script>
+{% endblock js_head %}
+{% block focusbox %}
+    <div class="focusbox">
+        <div class="container"><h1 class="focusbox-title">小姐姐福利视频</h1>
+            <div class="article-tags">
+                <a href="">美女短视频</a>
+                <a href="">{{ source }}短视频</a>
+                <a href="">小姐姐福利视频</a>
+            </div>
+            <div style="padding-top: 5px;font-size:12px;/* margin-top: 0px; */font-family: monospace;color: #978883;">
+                点击用户ID可以关注小姐姐哦~！如查询结果为空请尝试刷新查询页面
+            </div>
+        </div>
+    </div>
+{% endblock focusbox %}
+<!-- menu start-->
+{% block menu %}
+    <ul>
+        <li><a href="/">随便看看</a></li>
+        <li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-50716">
+            <a>妹子图</a>
+            <ul class="sub-menu">
+                {% for types in typelist %}
+                    <li menu-item menu-item-type-post_type menu-item-object-page menu-item-18><a
+                            href="{% url 'type' types.type_id %}">{{ types.type }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        <li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-50716">
+            <a>排行榜</a>
+            <ul class="sub-menu">
+                <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a href="/sort/new">最新发布</a>
+                </li>
+                <li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a href="/sort/hot">最受欢迎</a>
+                </li>
+            </ul>
+        </li>
+        <li><a href="/tag">标签云</a></li>
+        <li class="menu-item menu-item-type-taxonomy menu-item-object-category current-menu-item menu-item-28"><a
+                href="/video">视频小姐姐</a></li>
+    </ul>
+{% endblock menu %}
+<!-- menu end-->
+<!-- section start-->
+{% block section %}
+
+    <div style="width: 30%;position: relative;top: 50%;left: 50%;transform: translate(-50%);">
+        <video id="player" src="{{ url }}" webkit-playsinline playsinline loop autoplay="autoplay"
+               style="height: auto; max-width: 100%;" poster="/static/imeizi_back.png"></video>
+        <span style="position:absolute;top:15px;left:5px;color:#fff;">视频来源:[<span id="source"
+                                                                                 style="color: #FF4040;">{{ source }}</span>]</span>
+        <!--<span style="position:absolute;top:30px;left:5px;color:#fff;">用户ID:[<span
+            style="color: #4682B4; cursor: pointer;" id="check">{{ user_id }}</span>]</span>-->
+        <input id="next" type="button"
+               style=" display: block; width: 100px;height: 100px;position: absolute;bottom: 5px;right: 3px; background:url(/static/zde/next.png) no-repeat left top"/>
+    </div>
+
+{% endblock section %}
+<!-- section end-->
+{% block js %}
+
+    <script>
+        (function (window, document) {
+            var user_id ={{ user_id }};
+            if (top != self) {
+                window.top.location.replace(self.location.href);
+            }
+            var get = function (id) {
+                return document.getElementById(id);
+            }
+            var bind = function (element, event, callback) {
+                return element.addEventListener(event, callback);
+            }
+            var randomm = function () {
+                var ajax = new XMLHttpRequest();
+                ajax.open("get", "/get_video?tem=" + Math.random());
+                ajax.send()
+                ajax.onreadystatechange = function () {
+                    if (ajax.readyState == 4 && ajax.status == 200) {
+                        var obj = JSON.parse(ajax.responseText);
+                        //var uid = document.getElementById("check");
+                        var source = document.getElementById("source");
+                        //uid.innerText = obj.user_id;
+                        source.innerText = obj.source;
+                        player.src = obj.url;
+                        user_id = obj.user_id;
+                        player.play()
+                    }
+                }
+                //location.replace("?tmp="+Math.random());
+            }
+
+            bind(get('next'), 'click', randomm);
+            bind(player, 'error', function () {
+                randomm();
+            });
+            /*bind(get('check'), 'click', function () {
+
+                window.open("https://live.kuaishou.com/search/?keyword=" + user_id);
+            });*/
+            var video = document.getElementById("player");
+            video.onclick = function () {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            }
+            bind(player, 'ended', function () {
+                if (auto) randomm();
+            });
+        })(window, document);
+    </script>
+{% endblock js %}

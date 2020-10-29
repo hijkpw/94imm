@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+<!-- header start -->
+{% block title %}标签云 - {{ siteName }}{% endblock title %}
+{% block keywords %}{% for t in keyword %}{{ t.tag }},{% endfor %}{% endblock keywords %}
+{% block description %}{{ description }}{% endblock description %}
+<!-- header end -->
+{% block focusbox %}
+<div class="focusbox"><div class="container"><h1 class="focusbox-title">热门标签</h1></div></div>
+{% endblock focusbox %}
+<!-- menu start-->
+{% block menu %}
+    <ul>
+				<li><a href="/">随便看看</a></li>
+				<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-50716"><a>妹子图</a>
+				<ul class="sub-menu">
+                {% for types in typelist %}
+                    <li menu-item menu-item-type-post_type menu-item-object-page menu-item-18><a href="{% url 'type' types.type_id %}">{{ types.type }}</a></li>
+                {% endfor %}
+				</ul>
+				<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-50716"><a>排行榜</a>
+				<ul class="sub-menu">
+				<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a href="/sort/new">最新发布</a></li>
+				<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-18"><a href="/sort/hot">最受欢迎</a></li>
+				</ul>
+				</li>
+				<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-menu-item menu-item-28"><a href="/tag/">标签云</a></li>
+				<li><a href="/video">视频小姐姐</a></li>
+			</ul>
+{% endblock menu %}
+<!-- menu end-->
+<!-- section start-->
+{% block section %}
+    <div class="tagslist">
+		<ul>
+		{% for t in data %}
+			<li><a class="name" href="{% url 'tag' t.tid %}">{{ t.tag }}</a><small>&times;{{t.viwe}}</small></li>
+        {% endfor %}
+        </ul>
+
+	</div>
+{% endblock section %}
+<!-- section end-->

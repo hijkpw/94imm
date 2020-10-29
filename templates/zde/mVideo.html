@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<meta name="apple-touch-fullscreen" content="yes"/>
+<meta name="screen-orientation" content="portrait"><!-- uc强制竖屏 -->
+<meta name="x5-orientation" content="portrait"><!-- QQ强制竖屏 -->
+<meta name="full-screen" content="yes"><!-- UC强制全屏 -->
+<meta name="x5-fullscreen" content="true"><!-- QQ强制全屏 -->
+<meta name="browsermode" content="application"><!-- UC应用模式 -->
+<meta name="x5-page-mode" content="app"><!-- QQ应用模式 -->
+<meta http-equiv="expires" content="0">
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<title>视频小姐姐-手机版-94iMM</title>
+<style type="text/css">
+*{
+	margin:0px; 
+	padding:0px;
+	touch-action: pan-y;
+	text-align: center;
+}
+.app{
+	width: 100%; 
+	height:100%; 
+	position: absolute; 
+	top:0px; 
+	right:0px; 
+	bottom: 0px; 
+	left:0px; 
+	overflow: hidden;
+	background-color: #ffffff;
+}
+.video{
+	width: 100%; 
+	height: 100%;
+}
+#my-video{
+	object-fit: cover; 
+	object-position: center center;
+}
+canvas {
+	display: block;
+	position: absolute;
+	bottom: 100px;
+	right: -24px;
+	z-index: 20;
+	cursor: pointer;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.journal-reward {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	height: 80px;
+	width: 80px;
+	display: block;
+	z-index: 21;
+}
+.m {
+	width: 240px;
+	height: 320px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+<script>if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {/*无动作*/}else{window.location.href = "/video";}</script>
+</head>
+<script> var url= '{{ url }}';</script><body>
+<div id="app" class="app">
+<video preload='auto' id='my-video' ref="video" :src="videoUrl" @click="player" loop autoplay="autoplay" webkit-playsinline='true' playsinline='true' x-webkit-airplay='true' x5-video-player-type='h5' x5-video-player-fullscreen='true' x5-video-ignore-metadata='true' width='100%' height='100%'><p>不支持video</p></video>
+</div>
+<span style="position:absolute;top:5px;left:5px;color:#fff;">视频来源:[<span style="color: #FF4040;" id ="source">{{ source }}</span>]</span>
+<span style="position:absolute;top:25px;left:10px;color:#fff;">用户ID:[<span style="color: #4682B4;" id = "check">{{ user_id}}</span>]</span>
+<span style="position:absolute;top:5px;right:10px;color:#fff;">←左滑切换视频</span>
+<span style="position:absolute;top:25px;right:10px;color:#fff;">点击播放/暂停</span>
+<span style="position:absolute;bottom:10px;left:10px;color:#fff;">视频采集自网络 | <a target="_blank" href="https://www.94imm.com/">返回94imm</a></span>
+<div class="m"> <img src="/static/zde/reward.png" class="journal-reward" /> </div>
+<script src="/static/zde/js/flutter-hearts-zmt.js" type="text/javascript" charset="utf-8"></script>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script type="text/javascript">
+    // vue 解析
+    var Application = new Vue({
+        el: "#app",
+        data: {
+            videoUrl:'',
+            video:null,
+        },
+        mounted: function(){
+            this.videoUrl = url;
+            this.video = this.$refs.video;
+        },
+        methods: {
+            player:function(){
+                if(this.video.paused){
+                    // 播放
+                    this.video.play();
+                }else{
+                    // 暂停
+                    this.video.pause()
+                };            
+            }
+        }
+    });
+
+var startx, starty;
+ 
+//获得角度
+function getAngle(angx, angy) {
+    return Math.atan2(angy, angx) * 180 / Math.PI;
+};
+ 
+//根据起点终点返回方向 1向上滑动 2向下滑动 3向左滑动 4向右滑动 0点击事件
+function getDirection(startx, starty, endx, endy) {
+    var angx = endx - startx;
+    var angy = endy - starty;
+    var result = 0;
+ 
+    //如果滑动距离太短
+    if (Math.abs(angx) < 2 && Math.abs(angy) < 2) {
+        return result;
+    }
+ 
+    var angle = getAngle(angx, angy);
+    if (angle >= -135 && angle <= -45) {
+        result = 1;
+    } else if (angle > 45 && angle < 135) {
+        result = 2;
+    } else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
+        result = 3;
+    } else if (angle >= -45 && angle <= 45) {
+        result = 4;
+    }
+    return result;
+}
+ 
+//手指接触屏幕
+document.addEventListener("touchstart", function(e){
+    startx = e.touches[0].pageX;
+    starty = e.touches[0].pageY;
+}, false);
+ 
+//手指离开屏幕
+document.addEventListener("touchend", function(e) {
+    var endx, endy;
+    endx = e.changedTouches[0].pageX;
+    endy = e.changedTouches[0].pageY;
+    var direction = getDirection(startx, starty, endx, endy);
+	
+    switch (direction) {
+        case 3:
+		    var ajax = new XMLHttpRequest();
+			ajax.open("get","/get_video?tem="+Math.random());
+			ajax.send()
+			ajax.onreadystatechange = function(){
+			if(ajax.readyState == 4 && ajax.status == 200){
+			    var player= document.getElementById("my-video");
+				var obj = JSON.parse(ajax.responseText);  
+                var uid=document.getElementById("check");
+				var source=document.getElementById("source");
+				uid.innerText = obj.user_id;
+				source.innerText = obj.source;
+				player.src = obj.url;
+				player.play()
+				}
+			}
+            
+            break;
+        }
+}, false);
+
+
+</script>
+<script type="text/javascript">
+        /*7Core-CN - 网页鼠标点击特效（爱心）*/
+        !function (e, t, a) {function r() {for (var e = 0; e < s.length; e++) s[e].alpha <= 0 ? (t.body.removeChild(s[e].el), s.splice(e, 1)) : (s[e].y--, s[e].scale += .004, s[e].alpha -= .013, s[e].el.style.cssText = "left:" + s[e].x + "px;top:" + s[e].y + "px;opacity:" + s[e].alpha + ";transform:scale(" + s[e].scale + "," + s[e].scale + ") rotate(45deg);background:" + s[e].color + ";z-index:99999");requestAnimationFrame(r)}function n() {var t = "function" == typeof e.onclick && e.onclick;e.onclick = function (e) {t && t(), o(e)}}function o(e) {var a = t.createElement("div");a.className = "heart", s.push({el: a,x: e.clientX - 5,y: e.clientY - 5,scale: 1,alpha: 1,color: c()}), t.body.appendChild(a)}function i(e) {var a = t.createElement("style");a.type = "text/css";try {a.appendChild(t.createTextNode(e))} catch (t) {a.styleSheet.cssText = e}t.getElementsByTagName("head")[0].appendChild(a)}function c() {return "rgb(" + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + ")"}var s = [];e.requestAnimationFrame = e.requestAnimationFrame || e.webkitRequestAnimationFrame || e.mozRequestAnimationFrame || e.oRequestAnimationFrame || e.msRequestAnimationFrame || function (e) {setTimeout(e, 1e3 / 60)}, i(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"), n(), r()}(window, document);
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-92272800-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'UA-92272800-2');
+</script>
+</html>

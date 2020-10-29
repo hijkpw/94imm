@@ -1,0 +1,46 @@
+{% if is_paginated %}
+{% load i18n %}
+<ul>
+  {% block previouslink %}
+  {% if page_obj.has_previous %}
+  {% if disable_link_for_first_page and page_obj.previous_page_number == 1 %}
+   <li class="prev-page"><a href="{{ request.path }}{% if getvars %}?{{ getvars|slice:"1:" }}{% endif %}">{{ previous_link_decorator|safe }}{% trans "" %}</a></li>
+  {% else %}
+  <li class="prev-page"><a href="?page{{ page_suffix }}={{ page_obj.previous_page_number }}{{ getvars }}">{{ previous_link_decorator|safe }}{% trans "" %}</a></li>
+  {% endif %}
+  {% else %}
+  {% if display_disabled_previous_link %}
+  <li class="prev-page">{{ previous_link_decorator|safe }}{% trans "" %}</li>
+  {% endif %}
+  {% endif %}
+  {% endblock previouslink %}
+  {% block pagelinks %}
+  {% if display_page_links %}
+  {% for page in pages %}
+  {% if page %}
+  {% ifequal page page_obj.number %}
+  <li><a href="?page{{ page_suffix }}={{ page }}{{ getvars }}" style="background-color:#FF6651;color:#fff" >{{ page }}</a></li>
+  {% else %}
+  {% if disable_link_for_first_page and page == 1 %}
+  <li><a href="{{ request.path }}{% if getvars %}?{{ getvars|slice:"1:" }}{% endif %}">{{ page }}</a></li>
+  {% else %}
+  <li><a href="?page{{ page_suffix }}={{ page }}{{ getvars }}" >{{ page }}</a></li>
+  {% endif %}
+  {% endifequal %}
+  {% else %}
+  <li><span>...</span></li>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+  {% endblock pagelinks %}
+  {% block nextlink %}
+  {% if page_obj.has_next %}
+  <li class="next-page"><a href="?page{{ page_suffix }}={{ page_obj.next_page_number }}{{ getvars }}">{% trans "" %}{{ next_link_decorator|safe }}</a></li>
+  {% else %}
+  {% if display_disabled_next_link %}
+  <li class="next-page"><span class="disabled next">{% trans "" %}{{ next_link_decorator|safe }}</span></li>
+  {% endif %}
+  {% endif %}
+  {% endblock nextlink %}
+</ol>
+{% endif %}
