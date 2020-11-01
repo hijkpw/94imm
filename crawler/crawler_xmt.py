@@ -118,12 +118,18 @@ class Spider():
 
 
     def run_img(self):
+        tries = 0
         while True:
             Spider.rlock.acquire()
             if len(self.img_url_list) == 0 :
                 Spider.rlock.release()
-                continue
+                tries += 1
+                if tries > 5:
+                    break
+                else:
+                    continue
             else:
+                tries = 0
                 urls = self.img_url_list.pop()
                 url = urls.get("img_url")
                 Referer = urls.get("Referer")
