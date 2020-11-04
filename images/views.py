@@ -22,7 +22,7 @@ def index(request):
                          "type": typedict[type_id], "type_id": type_id})
         return render(request, 'index.html',
                       {"data": imgs, "typelist": typelist, "siteName": site_name, "keyWord": key_word,
-                       "description": description, "siteUrl": site_url, "email": email})
+                       "description": description, "siteUrl": site_url, "email": email, "friendly_link":friendly_link})
 
 
 def page(request, i_id):
