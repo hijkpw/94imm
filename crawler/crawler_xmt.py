@@ -87,7 +87,7 @@ class Spider():
                     img_path = self.img_path + time.strftime('%Y%m%d', time.localtime(
                         time.time())) + "/" +page_id + "/"
                     for imgurl in img:
-                        imgsrc = "http://www.xgmmtk.com/" + imgurl.get("src")
+                        imgsrc = "http://www.xgmmtk.com" + imgurl.get("src")
                         self.img_url_list.append(
                             {"img_url": imgsrc, "Referer": page_url,
                              "id": page_id})
@@ -95,6 +95,10 @@ class Spider():
                             cursor.execute(
                                 "UPDATE images_page SET firstimg = " + "'" + img_path+imgsrc.split("/")[-1] + "'" + " WHERE id=" + "'" + str(
                                     pageid) + "'")
+                        else:
+                            img_loc_path = img_path + imgsrc.split("/")[-1]
+                            imgp = pageid, img_loc_path, imgsrc
+                            cursor.execute("INSERT INTO images_image (pageid,imageurl,originurl) VALUES (%s,%s,%s)", imgp)
                         i+=1
                 else:
                     print("已采集")
