@@ -160,9 +160,9 @@ document.addEventListener("touchend", function(e) {
 			if(ajax.readyState == 4 && ajax.status == 200){
 			    var player= document.getElementById("my-video");
 				var obj = JSON.parse(ajax.responseText);  
-                var uid=document.getElementById("check");
+                //var uid=document.getElementById("check");
 				var source=document.getElementById("source");
-				uid.innerText = obj.user_id;
+				//uid.innerText = obj.user_id;
 				source.innerText = obj.source;
 				player.src = obj.url;
 				player.play()
