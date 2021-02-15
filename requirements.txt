@@ -1,9 +1,9 @@
 asn1crypto==0.24.0
 beautifulsoup4==4.6.0
 certifi==2018.11.29
-cffi==1.11.5
+cffi>=1.12
 chardet==3.0.4
-cryptography==2.4.2
+cryptography>=3.2
 dj-pagination==2.4.0
 Django>=1.11.29
 idna==2.6
