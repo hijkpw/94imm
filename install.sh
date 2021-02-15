@@ -14,6 +14,11 @@ function install_nginx() {
     systemctl enable nginx
 }
 
+install_mysql
+install_python
+install_nginx
+
+pip3 install -r requirements.txt
+
 rm -f /usr/local/lib/python3.6/site-packages/dj_pagination/templates/pagination/pagination.html
 cp templates/zde/pagination.html /usr/local/lib/python3.6/site-packages/dj_pagination/templates/pagination
-pip3 install -r requirements.txt
