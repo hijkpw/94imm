@@ -33,12 +33,16 @@ class Spider():
         self.thread_num = thread_number
 
     def get_url(self):
-        page = requests.get("http://www.xgmmtk.com/")
+        page = requests.get("http://www.xgmmtk.com/", timeout=10)
         soup = BeautifulSoup(page.text, "html.parser")
         a_soup = soup.find_all("a")
+        i = 1
         for a in a_soup:
             url = "http://www.xgmmtk.com/" + a.get("href")
             self.page_url_list.append(url)
+            i += 1
+            if i > 20:
+                break
 
     def get_img(self):
         db = pymysql.connect(dbhost.get("host"), dbhost.get("user"), dbhost.get("password"), dbhost.get("dbname"))
@@ -51,13 +55,13 @@ class Spider():
             else:
                 page_url = self.page_url_list.pop()
                 self.rlock.release()
-                page = requests.get(page_url)
+                page = requests.get(page_url, timeout=10)
                 soup=BeautifulSoup(page.text,"html.parser")
                 title=soup.title.string.replace("�","")
                 isExists = cursor.execute(
-                    "SELECT title FROM images_page WHERE title =" + "'" + title + "'" + " limit 1;")
+                    "SELECT id FROM images_page WHERE title =" + "'" + title + "'" + " limit 1;")
                 if isExists == 0:
-                    print("添加采集：",title)
+                    print("添加采集：", title)
                     if "袜" in title or "丝" in title:
                         type_id = 3
                         tagidlist=[3679,3700,3719,3628]
@@ -99,10 +103,11 @@ class Spider():
                             img_loc_path = img_path + imgsrc.split("/")[-1]
                             imgp = pageid, img_loc_path, imgsrc
                             cursor.execute("INSERT INTO images_image (pageid,imageurl,originurl) VALUES (%s,%s,%s)", imgp)
+
                         i+=1
                 else:
-                    print("已采集")
-                    pass
+                    print("已采集:" + page_url)
+
     def down_img(self,imgsrc,Referer,id):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 Safari/537.36",
@@ -113,11 +118,11 @@ class Spider():
         isdata = os.path.exists("../" + path + page_id)
         if not isdata:
             os.makedirs("../" + path + page_id)
-        isfile = os.path.exists("../" + path + page_id + "/" + imgsrc.split("/")[-1])
+        isfile = os.path.isfile("../" + path + page_id + "/" + imgsrc.split("/")[-1])
         if not isfile:
             with open("../" + path + page_id + "/" + imgsrc.split("/")[-1], "wb") as f:
                 print("已保存：" ,imgsrc)
-                f.write(requests.get(imgsrc, headers=headers,verify=False).content)
+                f.write(requests.get(imgsrc, headers=headers,verify=False, timeout=10).content)
 
 
 
@@ -127,8 +132,9 @@ class Spider():
             Spider.rlock.acquire()
             if len(self.img_url_list) == 0 :
                 Spider.rlock.release()
+                time.sleep(5)
                 tries += 1
-                if tries > 5:
+                if tries > 3:
                     break
                 else:
                     continue
@@ -155,6 +161,6 @@ class Spider():
             run_t.start()
 
 if __name__ == "__main__":
-    spider=Spider(img_path='/static/images/',thread_number=10)
+    spider=Spider(img_path='/static/images/',thread_number=1)
     spider.get_url()
     spider.run()

@@ -1,9 +1,9 @@
 <?php
 
 function getConn() {
-    $dbuser = "imeizi";
-    $dbpass = "sadf@#ASDfasdf#";
-    $conn = new PDO("mysql:host=localhost;port=3306;dbname=imeizi;", $dbuser, $dbpass, array(
+    $dbuser = "填写数据库用户名";
+    $dbpass = "填写数据库密码";
+    $conn = new PDO("mysql:host=localhost;port=3306;dbname=填写数据库名;", $dbuser, $dbpass, array(
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_PERSISTENT => true,
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_general_ci"
@@ -20,6 +20,7 @@ $opts = array(
 
 $context = stream_context_create($opts);
 
+# 从https://sp.nico.run 下载视频
 function getVideoUrl() {
     global $context;
     $url = "https://sp.nico.run/video.php?_t=" . bin2hex(openssl_random_pseudo_bytes(10));

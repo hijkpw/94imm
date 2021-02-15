@@ -37,10 +37,10 @@ class Spider():
         self.type_id = type_id
 
     def get_url(self):
-        for i in range(2, self.page_number + 1):
+        for i in range(1, self.page_number + 1):
             if i ==1:
-                page = self.s.get(self.spider_url +"/"+self.type ,verify=False).text
-            page=self.s.get(self.spider_url +"/"+self.type+"/page/"+str(i),verify=False).text
+                page = self.s.get(self.spider_url +"/"+self.type ,verify=False, timeout=10).text
+            page=self.s.get(self.spider_url +"/"+self.type+"/page/"+str(i),verify=False, timeout=10).text
             soup = BeautifulSoup(page, "html.parser")
             page_base_url = soup.find("div",class_="postlist").find_all("li")
             for page_url in page_base_url:
@@ -54,7 +54,7 @@ class Spider():
         cursor = db.cursor()
         for img_base_url in self.page_url_list:
             tagidlist = []
-            img_soup = BeautifulSoup(self.s.get(img_base_url,verify=False).text, "html.parser")
+            img_soup = BeautifulSoup(self.s.get(img_base_url,verify=False, timeout=10).text, "html.parser")
             img_num = img_soup.find("div", class_="pagenavi").text.split("…")[-1][0:-5]
             img_url = img_soup.find("div", class_="main-image").find("img").get("src").split("/")[0:-1]
             img_surl = "/".join(img_url)
@@ -102,7 +102,7 @@ class Spider():
         if isfile == False:
             with open("../" + self.img_path + path + "/" + imgsrc.split("/")[-1], "wb")as f:
                 print("下载图片：" + self.img_path + path + "/" + imgsrc.split("/")[-1])
-                f.write(requests.get(imgsrc, headers=self.headers, verify=False).content)
+                f.write(requests.get(imgsrc, headers=self.headers, verify=False, timeout=10).content)
 
     def down_url(self):
         while True:
@@ -126,7 +126,7 @@ class Spider():
 
 
 if __name__ == '__main__':
-    for i in [{"page": 2, "type": "xinggan", "type_id": 1},]:
+    for i in [{"page": 1, "type": "xinggan", "type_id": 1},]:
         spider = Spider(page_num=i.get("page"), img_path='/static/images/', thread_num=10, type_id=i.get("type_id"),
                         type=i.get("type"))
         spider.get_url()

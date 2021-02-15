@@ -40,9 +40,9 @@ class Spider():
     def get_url(self):
         for i in range(self.start_page_num, self.end_page_num):
             if self.type_id==0:
-                page = s.get(index_url.format(str(i)), verify=False).text
+                page = s.get(index_url.format(str(i)), verify=False, timeout=10).text
             else:
-                page = s.get(tag_url.format(self.type,str(i)), verify=False).text
+                page = s.get(tag_url.format(self.type,str(i)), verify=False, timeout=10).text
             # page = s.get(base_url + self.type+"-"+str(i)+".html", verify=False).text
             soup = BeautifulSoup(page, "html.parser")
             page_base_url = soup.find("ul", class_="detail-list").find_all("li")
@@ -54,7 +54,7 @@ class Spider():
         tagidlist=[]
         db = pymysql.connect(dbhost.get("host"), dbhost.get("user"), dbhost.get("password"), dbhost.get("dbname"))
         cursor = db.cursor()
-        page = s.get(url,verify=False)
+        page = s.get(url,verify=False, timeout=10)
         soup = BeautifulSoup(page.text, "html.parser")
         title=soup.title.string.replace("_爱美女","")
         if self.type_id == 0:
@@ -120,7 +120,7 @@ class Spider():
             os.makedirs("../" + path + page_id)
         with open("../" + path + page_id + "/" + imgsrc.split("/")[-1].split(".")[0] + ".jpg", "wb") as f:
             print("已保存：" + path + page_id + "/" + imgsrc.split("/")[-1].split(".")[0] + ".jpg")
-            f.write(s.get(imgsrc, headers=headers,verify=False).content)
+            f.write(s.get(imgsrc, headers=headers,verify=False, timeout=10).content)
 
     def run_page(self):
         while True:
@@ -177,17 +177,17 @@ class Spider():
 
 # start_page是采集开始也，end是采集结束页，type不用修改，自动分类，起始页为1
 if __name__ == "__main__":
-    cl_list=[{"start_page": 1,"end_page":17, "type": "Cosplay", "type_id":6},
-             {"start_page": 1,"end_page":17, "type": "性感", "type_id":1},
-             {"start_page": 1, "end_page": 17, "type": "丝袜", "type_id": 3},
-             {"start_page": 1, "end_page": 17, "type": "美腿", "type_id": 4},
-             {"start_page": 1, "end_page": 17, "type": "美胸", "type_id": 5},
-             {"start_page": 1, "end_page": 17, "type": "制服诱惑", "type_id": 7}
+    cl_list=[{"start_page": 1,"end_page":2, "type": "Cosplay", "type_id":6},
+             {"start_page": 1,"end_page":2, "type": "性感", "type_id":1},
+             {"start_page": 1, "end_page": 2, "type": "丝袜", "type_id": 3},
+             {"start_page": 1, "end_page": 2, "type": "美腿", "type_id": 4},
+             {"start_page": 1, "end_page": 2, "type": "美胸", "type_id": 5},
+             {"start_page": 1, "end_page": 2, "type": "制服诱惑", "type_id": 7}
              ]
 
 
     for i in cl_list:
-        spider = Spider(start_page_num=i.get("start_page"),end_page_num=i.get("end_page"), img_path='/static/images/', thread_num=10,
+        spider = Spider(start_page_num=i.get("start_page"),end_page_num=i.get("end_page"), img_path='/static/images/', thread_num=3,
                         type=i.get("type"),type_id=i.get("type_id"))
         spider.get_url()
         spider.run_1()

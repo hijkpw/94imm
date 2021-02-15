@@ -38,8 +38,8 @@ class Spider():
         self.tagslist= tagslist
 
     def get_url(self):
-        for i in range(4,self.page_num):
-            page = s.get(base_url+"/e/action/ListInfo/?classid="+str(self.type_id), headers=self.headers,verify=False)
+        for i in range(1,self.page_num+1):
+            page = s.get(base_url+"/e/action/ListInfo/?classid="+str(self.type_id), headers=self.headers,verify=False, timeout=10)
             soup = BeautifulSoup(page.text, "html.parser")
             try:
                 page_div = soup.find("dl", class_="list-left public-box").find_all("dd")
@@ -91,7 +91,7 @@ class Spider():
                     img_page_url=url
                 else:
                     img_page_url = "/".join(url.split("/")[0:-1]) + "/" + id + "_" + str(i) + ".html"
-                img_page=s.get(img_page_url,headers=headers,verify=False)
+                img_page=s.get(img_page_url,headers=headers,verify=False, timeout=10)
                 # page.encoding = 'utf-8'
                 img_soup=BeautifulSoup(img_page.text,"html.parser")
                 img_url = img_soup.find("div",class_="content-pic").find("img").get("src")
@@ -126,7 +126,7 @@ class Spider():
         if not isfile:
             with open("../" + path + page_id + "/" + imgsrc.split("/")[-1].split(".")[0] + ".jpg", "wb") as f:
                 print("已保存：" + path + page_id + "/" + imgsrc.split("/")[-1].split(".")[0] + ".jpg")
-                f.write(s.get(imgsrc, headers=headers,verify=False).content)
+                f.write(s.get(imgsrc, headers=headers,verify=False, timeout=10).content)
 
     def run_page(self):
         while True:
@@ -188,8 +188,8 @@ class Spider():
 
 # page是采集深度，从1开始，采集第一页即采集最新发布。type是源站分类，type_id是对应本站分类的id
 if __name__ == "__main__":
-    for i in [{"page": 20, "type": "xinggan", "type_id": 1},{"page":1,"type":"qingchun","type_id": 2}]:
-        spider = Spider(page_num=i.get("page"), img_path='/static/images/', thread_num=10, type_id=i.get("type_id"),
+    for i in [{"page": 1, "type": "xinggan", "type_id": 1},{"page":1,"type":"qingchun","type_id": 2}]:
+        spider = Spider(page_num=i.get("page"), img_path='/static/images/', thread_num=2, type_id=i.get("type_id"),
                         type=i.get("type"),tagslist=["性感美女","诱惑美女","大胸美女","萌妹子"])
         spider.get_url()
         spider.run_1()
