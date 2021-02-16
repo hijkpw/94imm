@@ -1,4 +1,4 @@
-94imm爬虫修复版，新增自动下载视频脚本，演示网站：<https://imeizi.me>
+94imm爬虫修复版，新增自动下载视频脚本，演示网站：<https://imeizi.me>，保姆级教程：<https://v2raytech.com/imeizi-tutorial/>
 
 # 安装说明
 参数配置
