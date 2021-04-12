@@ -2,7 +2,7 @@
 
 function install_mysql(){
     yum install -y mariadb-server
-    systemct enable mariadb
+    systemctl enable mariadb
 }
 
 function install_python(){
